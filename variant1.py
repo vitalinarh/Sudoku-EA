@@ -31,13 +31,7 @@ def run_for_file(filename, numb_runs, numb_generations, size_pop, size_cromo, pr
                                              sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz, sol)
             f_out.write(str(best[1]) + '\n')
 
-
 ''' Evolutionary Algorithm '''
-
-
-''' Evolutionary Algorithm '''
-
-
 def sea(n_generations, size_pop, size_cromo, prob_mut, prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quiz, sol):
 
     # restart population after a number of generations where there is no progress
