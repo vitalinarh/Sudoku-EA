@@ -6,6 +6,7 @@ import numpy as np
 import copy
 from random import random, sample, randint, uniform, sample, shuffle, gauss, randrange, shuffle
 from operator import itemgetter
+import sys
 
 ''' Run algorithm '''
 def run(numb_runs, numb_generations, size_pop, size_cromo, prob_mut,  prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz, sol):
@@ -20,11 +21,12 @@ def run(numb_runs, numb_generations, size_pop, size_cromo, prob_mut,  prob_cross
     return boa, aver_gener
 
 ''' Save runs in file '''
-def run_for_file(filename, numb_runs, numb_generations, size_pop, size_cromo, prob_mut, prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func):
+def run_for_file(filename, numb_runs, numb_generations, size_pop, size_cromo, prob_mut,  prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz, sol):
     with open(filename, 'w') as f_out:
         for i in range(numb_runs):
-            best = sea(numb_generations, size_pop, size_cromo, prob_mut, prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz)
-            f_out.write(str(best[1]) + '\n')
+            best, stat_best, stat_aver, gen = sea(numb_generations, size_pop, size_cromo, prob_mut,
+                                                  prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz, sol)
+            f_out.write(str(best[1]) + ',' + str(gen) + '\n')
 
 
 ''' Evolutionary Algorithm '''
@@ -73,7 +75,7 @@ def sea(n_generations, size_pop, size_cromo, prob_mut, prob_cross, sel_parents, 
         # ------ Update Fitness --------------
         population = [(individual[0], fitness_func(individual[0])) for individual in population]
 
-        print('Generation: ', gen, 'Best: ', best_pop(population)[1])
+        #print('Generation: ', gen, 'Best: ', best_pop(population)[1])
 
         if prev_best != best_pop(population)[1]:
             prev_best = best_pop(population)[1]
@@ -99,9 +101,9 @@ def sea(n_generations, size_pop, size_cromo, prob_mut, prob_cross, sel_parents, 
     print('')
     print_board(sol)
 
-    display(stat, stat_aver)
+    #display(stat, stat_aver)
 
-    return best_pop(population), stat, stat_aver
+    return best_pop(population), stat, stat_aver, gen
 
 ''' A candidate solutions to the Sudoku puzzle. Generates a random solution for each block by applying a random permutation from 1 to 9 to each block. Avoiding duplicates in each block '''
 def random_solution_gen(size_pop, size_cromo, quizz):
@@ -211,17 +213,24 @@ if __name__ == '__main__':
     quizz = quizzes[1]
     sol = solutions[1]
 
-    n_runs = 1
-    n_generations = 1000
-    size_pop = 800
+    n_runs = 30
+    n_generations = 2000
+    size_pop = 1000
     # Always constant (81)
     size_cromo = 81
-    prob_mut = 0.65
-    prob_cross = 0.9
+    prob_mut = float(sys.argv[1])
+    prob_cross = float(sys.argv[2])
     sel_parents = tour_sel(3)
-    recombination = one_block_crossover
-    mutation = swap_in_block
+    recombination = score_based_crossover
+    mutation = scramble_in_block
     sel_survivors = sel_survivors_elite(0.05)
     fitness_func = evaluate
 
-    run(n_runs, n_generations, size_pop, size_cromo, prob_mut,  prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz, sol)
+    filename = 'out\\var2_gen_' + \
+        str(n_generations) + '_pop_' + str(size_pop) + '_mut_' + \
+        str(prob_mut) + '_cross_' + str(prob_cross) + '.csv'
+
+    #run(n_runs, n_generations, size_pop, size_cromo, prob_mut,  prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz, sol)
+    run_for_file(filename, n_runs, n_generations, size_pop, size_cromo, prob_mut,  prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func, quizz, sol)
+
+    

@@ -135,6 +135,7 @@ def one_point_cross(indiv_1, indiv_2, prob_cross):
         pos = randint(0, len(cromo_1))
         f1 = cromo_1[0 : pos] + cromo_2[pos:]
         f2 = cromo_2[0 : pos] + cromo_1[pos:]
+
         return ((f1, 0), (f2, 0))
     else:
 	    return (indiv_1, indiv_2)
@@ -183,6 +184,7 @@ def swap_in_block(cromo, prob_muta, quiz):
     done = False
 
     if random() < prob_muta:
+        cromo_temp = copy.deepcopy(cromo)
 
         while (not done):
             # choose random block
@@ -203,18 +205,20 @@ def swap_in_block(cromo, prob_muta, quiz):
             if (quiz[row_block + row_value1][column_block + column_value1] == 0 and quiz[row_block + row_value2][column_block + column_value2] == 0):
                 # check if position 1 is different from position 2
                 if ( row_value1 != row_value2 and column_value1 != column_value2):
-                    cromo[row_block + row_value1][column_block + column_value1], cromo[row_block + row_value2][column_block + column_value2] = cromo[row_block + row_value2][column_block + column_value2], cromo[row_block + row_value1][column_block + column_value1] 
+                    cromo_temp[row_block + row_value1][column_block + column_value1], cromo_temp[row_block + row_value2][column_block +
+                                                                                                                    column_value2] = cromo_temp[row_block + row_value2][column_block + column_value2], cromo_temp[row_block + row_value1][column_block + column_value1]
                     done = True
+        
+        return cromo_temp
+    return cromo
 
-        return cromo
-
-    else:
-        return cromo
 
 """ (!) Use only with variant1. Mutate a candidate by picking a row, and then picking two values within that row to swap. """
 def swap_mutation(cromo, prob_muta, quiz):
     done = False
     if random() < prob_muta:
+
+        cromo_temp = copy.deepcopy(cromo)
 
         while (not done):
             
@@ -224,13 +228,13 @@ def swap_mutation(cromo, prob_muta, quiz):
             # check if allowed to switch places
             if (quiz[row][columns[0]] == 0 and quiz[row][columns[1]] == 0):
                 # swap values
-                value1 = cromo[row][columns[0]]
-                value2 = cromo[row][columns[1]]
-                cromo[row][columns[0]] = value2
-                cromo[row][columns[1]] = value1
+                value1 = cromo_temp[row][columns[0]]
+                value2 = cromo_temp[row][columns[1]]
+                cromo_temp[row][columns[0]] = value2
+                cromo_temp[row][columns[1]] = value1
                 done = True
 
-        return cromo
+        return cromo_temp
 
     else:
         return cromo
@@ -255,7 +259,89 @@ def scramble_muta(cromo, prob_muta, quiz):
                 row_values.pop(0)
 
     return cromo
+
+""" (!) Use only with variant2. Scramble values in a random block. """
+def scramble_in_block(cromo, prob_muta, quiz):
+    if random() < prob_muta:
+        cromo_temp = copy.deepcopy(cromo)
+        # choose random block
+        idx = [0, 3, 6]
+        row = randint(0, 2)
+        column = randint(0, 2)
+        row_block = idx[row]
+        column_block = idx[column]
+
+        values = []
+
+        if quiz[row_block][column_block] == 0:
+            values.append(cromo[row_block][column_block])
+
+        if quiz[row_block][column_block + 1] == 0:
+            values.append(cromo[row_block][column_block + 1])
+
+        if quiz[row_block][column_block + 2] == 0:
+            values.append(cromo[row_block][column_block + 2])
+
+        if quiz[row_block + 1][column_block] == 0:
+            values.append(cromo[row_block + 1][column_block])
+
+        if quiz[row_block + 1][column_block + 1] == 0:
+            values.append(cromo[row_block + 1][column_block + 1])
+
+        if quiz[row_block + 1][column_block + 2] == 0:
+            values.append(cromo[row_block + 1][column_block + 2])
+
+        if quiz[row_block + 2][column_block] == 0:
+            values.append(cromo[row_block + 2][column_block])
+
+        if quiz[row_block + 2][column_block + 1] == 0:
+            values.append(cromo[row_block + 2][column_block + 1])
+
+        if quiz[row_block + 2][column_block + 2] == 0:
+            values.append(cromo[row_block + 2][column_block + 2])
+
+        shuffle(values)
+
+        if quiz[row_block][column_block] == 0:
+            cromo_temp[row_block][column_block] = values[0]
+            values.pop(0)
+
+        if quiz[row_block][column_block + 1] == 0:
+            cromo_temp[row_block][column_block + 1] = values[0]
+            values.pop(0)
+
+        if quiz[row_block][column_block + 2] == 0:
+            cromo_temp[row_block][column_block + 2] = values[0]
+            values.pop(0)
+
+        if quiz[row_block + 1][column_block] == 0:
+            cromo_temp[row_block + 1][column_block] = values[0]
+            values.pop(0)
+
+        if quiz[row_block + 1][column_block + 1] == 0:
+            cromo_temp[row_block + 1][column_block + 1] = values[0]
+            values.pop(0)
+
+        if quiz[row_block + 1][column_block + 2] == 0:
+            cromo_temp[row_block + 1][column_block + 2] = values[0]
+            values.pop(0)
+
+        if quiz[row_block + 2][column_block] == 0:
+            cromo_temp[row_block + 2][column_block] = values[0]
+            values.pop(0)
+
+        if quiz[row_block + 2][column_block + 1] == 0:
+            cromo_temp[row_block + 2][column_block + 1] = values[0]
+            values.pop(0)
+
+        if quiz[row_block + 2][column_block + 2] == 0:
+            cromo_temp[row_block + 2][column_block + 2] = values[0]
+            values.pop(0)
         
+        return cromo_temp
+
+    return cromo
+
 # ==================== AUXILIARY =====================================================
 def best_pop(populacao):
     populacao.sort(key=itemgetter(1), reverse=True)
